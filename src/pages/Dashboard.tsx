@@ -334,9 +334,11 @@ const Dashboard = () => {
                 <div className="lg:col-span-1">
                   <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
                   <div className="space-y-3">
-                    <Button variant="default" className="w-full justify-start gap-3">
-                      <Wallet className="h-5 w-5" />
-                      Apply for Loan
+                    <Button variant="default" className="w-full justify-start gap-3" asChild>
+                      <Link to="/loan-application">
+                        <Wallet className="h-5 w-5" />
+                        Apply for Loan
+                      </Link>
                     </Button>
                     <Button variant="secondary" className="w-full justify-start gap-3">
                       <PiggyBank className="h-5 w-5" />
