@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,18 +14,76 @@ import {
   ArrowRight, 
   CheckCircle2 
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const Register = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreedToTerms) return;
+    if (!agreedToTerms) {
+      toast({
+        title: "Terms required",
+        description: "Please agree to the terms and conditions.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const { error } = await signUp(email, password, {
+      first_name: firstName,
+      last_name: lastName,
+      phone
+    });
+    
+    if (error) {
+      let message = error.message;
+      if (message.includes("already registered")) {
+        message = "This email is already registered. Please sign in instead.";
+      }
+      toast({
+        title: "Registration failed",
+        description: message,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Registration successful!",
+        description: "Your membership application has been submitted."
+      });
+      navigate('/dashboard');
+    }
+    
     setIsLoading(false);
   };
 
@@ -101,6 +159,8 @@ const Register = () => {
                     type="text"
                     placeholder="First name"
                     className="pl-10 h-11"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     required
                   />
                 </div>
@@ -112,6 +172,8 @@ const Register = () => {
                   type="text"
                   placeholder="Last name"
                   className="h-11"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   required
                 />
               </div>
@@ -126,6 +188,8 @@ const Register = () => {
                   type="email"
                   placeholder="Enter your email"
                   className="pl-10 h-11"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -140,6 +204,8 @@ const Register = () => {
                   type="tel"
                   placeholder="+251 9XX XXX XXX"
                   className="pl-10 h-11"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   required
                 />
               </div>
@@ -154,6 +220,8 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
                   className="pl-10 pr-10 h-11"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <button
@@ -165,7 +233,7 @@ const Register = () => {
                 </button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters with numbers and special characters
+                Must be at least 6 characters
               </p>
             </div>
 
