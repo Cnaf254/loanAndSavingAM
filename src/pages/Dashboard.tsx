@@ -17,6 +17,7 @@ import {
   Calendar,
   ChevronRight,
   Menu,
+  Shield,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -49,7 +50,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isStaff } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -220,8 +221,20 @@ const Dashboard = () => {
             ))}
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-sidebar-border">
+          {/* Admin Link & Logout */}
+          <div className="p-4 border-t border-sidebar-border space-y-2">
+            {isStaff() && (
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                asChild
+              >
+                <Link to="/admin">
+                  <Shield className="h-5 w-5" />
+                  <span>Admin Portal</span>
+                </Link>
+              </Button>
+            )}
             <Button 
               variant="ghost" 
               className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
