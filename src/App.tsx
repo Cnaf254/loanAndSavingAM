@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import LoanApplication from "./pages/LoanApplication";
+import SavingsManagement from "./pages/SavingsManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <LoanApplication />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/savings" 
+              element={
+                <ProtectedRoute>
+                  <SavingsManagement />
                 </ProtectedRoute>
               } 
             />

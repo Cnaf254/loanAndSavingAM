@@ -340,9 +340,11 @@ const Dashboard = () => {
                         Apply for Loan
                       </Link>
                     </Button>
-                    <Button variant="secondary" className="w-full justify-start gap-3">
-                      <PiggyBank className="h-5 w-5" />
-                      Update Savings Plan
+                    <Button variant="secondary" className="w-full justify-start gap-3" asChild>
+                      <Link to="/savings">
+                        <PiggyBank className="h-5 w-5" />
+                        Update Savings Plan
+                      </Link>
                     </Button>
                     <Button variant="outline" className="w-full justify-start gap-3">
                       <FileText className="h-5 w-5" />
