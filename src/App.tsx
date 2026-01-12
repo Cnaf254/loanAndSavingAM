@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import LoanApplication from "./pages/LoanApplication";
 import SavingsManagement from "./pages/SavingsManagement";
 import AdminDashboard from "./pages/AdminDashboard";
+import LoanApproval from "./pages/LoanApproval";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +66,14 @@ const App = () => (
               element={
                 <StaffRoute>
                   <AdminDashboard />
+                </StaffRoute>
+              } 
+            />
+            <Route 
+              path="/admin/loans" 
+              element={
+                <StaffRoute>
+                  <LoanApproval />
                 </StaffRoute>
               } 
             />
