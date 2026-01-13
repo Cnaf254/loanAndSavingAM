@@ -363,9 +363,11 @@ const Dashboard = () => {
                       <FileText className="h-5 w-5" />
                       Download Statement
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-3">
-                      <Users className="h-5 w-5" />
-                      Manage Guarantors
+                    <Button variant="ghost" className="w-full justify-start gap-3" asChild>
+                      <Link to="/dashboard/guarantors">
+                        <Users className="h-5 w-5" />
+                        Manage Guarantors
+                      </Link>
                     </Button>
                   </div>
                 </div>
