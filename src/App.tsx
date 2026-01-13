@@ -15,6 +15,7 @@ import SavingsManagement from "./pages/SavingsManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import LoanApproval from "./pages/LoanApproval";
 import GuarantorManagement from "./pages/GuarantorManagement";
+import MemberProfile from "./pages/MemberProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -91,6 +92,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <GuarantorManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/profile" 
+              element={
+                <ProtectedRoute>
+                  <MemberProfile />
                 </ProtectedRoute>
               } 
             />

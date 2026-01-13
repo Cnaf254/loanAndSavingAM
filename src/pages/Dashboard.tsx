@@ -114,7 +114,7 @@ const Dashboard = () => {
     { name: "Loans", icon: Wallet, href: "/dashboard/loans", active: false },
     { name: "Statements", icon: FileText, href: "/dashboard/statements", active: false },
     { name: "Guarantors", icon: Users, href: "/dashboard/guarantors", active: false },
-    { name: "Settings", icon: Settings, href: "/dashboard/settings", active: false },
+    { name: "Settings", icon: Settings, href: "/dashboard/profile", active: false },
   ];
 
   const formatCurrency = (amount: number) => {
