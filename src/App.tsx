@@ -14,6 +14,7 @@ import LoanApplication from "./pages/LoanApplication";
 import SavingsManagement from "./pages/SavingsManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import LoanApproval from "./pages/LoanApproval";
+import GuarantorManagement from "./pages/GuarantorManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,14 @@ const App = () => (
                 <StaffRoute>
                   <AdminDashboard />
                 </StaffRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/guarantors" 
+              element={
+                <ProtectedRoute>
+                  <GuarantorManagement />
+                </ProtectedRoute>
               } 
             />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
