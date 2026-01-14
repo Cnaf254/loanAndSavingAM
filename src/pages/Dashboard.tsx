@@ -110,7 +110,7 @@ const Dashboard = () => {
 
   const navigation = [
     { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard", active: true },
-    { name: "Savings", icon: PiggyBank, href: "/dashboard/savings", active: false },
+    { name: "Savings", icon: PiggyBank, href: "/savings", active: false },
     { name: "Loans", icon: Wallet, href: "/dashboard/loans", active: false },
     { name: "Statements", icon: FileText, href: "/dashboard/statements", active: false },
     { name: "Guarantors", icon: Users, href: "/dashboard/guarantors", active: false },
