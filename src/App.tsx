@@ -18,6 +18,14 @@ import GuarantorManagement from "./pages/GuarantorManagement";
 import MemberProfile from "./pages/MemberProfile";
 import NotFound from "./pages/NotFound";
 
+// Role-specific dashboards
+import SystemAdminDashboard from "./pages/dashboards/SystemAdminDashboard";
+import ChairpersonDashboard from "./pages/dashboards/ChairpersonDashboard";
+import LoanCommitteeDashboard from "./pages/dashboards/LoanCommitteeDashboard";
+import ManagementCommitteeDashboard from "./pages/dashboards/ManagementCommitteeDashboard";
+import AccountantDashboard from "./pages/dashboards/AccountantDashboard";
+import MemberDashboard from "./pages/dashboards/MemberDashboard";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,78 +39,29 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard/*" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/loan-application" 
-              element={
-                <ProtectedRoute>
-                  <LoanApplication />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/savings" 
-              element={
-                <ProtectedRoute>
-                  <SavingsManagement />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin" 
-              element={
-                <StaffRoute>
-                  <AdminDashboard />
-                </StaffRoute>
-              } 
-            />
-            <Route 
-              path="/admin/loans" 
-              element={
-                <StaffRoute>
-                  <LoanApproval />
-                </StaffRoute>
-              } 
-            />
-            <Route 
-              path="/admin/*" 
-              element={
-                <StaffRoute>
-                  <AdminDashboard />
-                </StaffRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard/guarantors" 
-              element={
-                <ProtectedRoute>
-                  <GuarantorManagement />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard/profile" 
-              element={
-                <ProtectedRoute>
-                  <MemberProfile />
-                </ProtectedRoute>
-              } 
-            />
+            
+            {/* Role-specific dashboards (using dummy data) */}
+            <Route path="/admin" element={<SystemAdminDashboard />} />
+            <Route path="/admin/*" element={<SystemAdminDashboard />} />
+            <Route path="/chairperson" element={<ChairpersonDashboard />} />
+            <Route path="/chairperson/*" element={<ChairpersonDashboard />} />
+            <Route path="/loan-committee" element={<LoanCommitteeDashboard />} />
+            <Route path="/loan-committee/*" element={<LoanCommitteeDashboard />} />
+            <Route path="/management" element={<ManagementCommitteeDashboard />} />
+            <Route path="/management/*" element={<ManagementCommitteeDashboard />} />
+            <Route path="/accountant" element={<AccountantDashboard />} />
+            <Route path="/accountant/*" element={<AccountantDashboard />} />
+            <Route path="/member" element={<MemberDashboard />} />
+            <Route path="/member/*" element={<MemberDashboard />} />
+            
+            {/* Legacy routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/loan-application" element={<ProtectedRoute><LoanApplication /></ProtectedRoute>} />
+            <Route path="/savings" element={<ProtectedRoute><SavingsManagement /></ProtectedRoute>} />
+            <Route path="/dashboard/guarantors" element={<ProtectedRoute><GuarantorManagement /></ProtectedRoute>} />
+            <Route path="/dashboard/profile" element={<ProtectedRoute><MemberProfile /></ProtectedRoute>} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
