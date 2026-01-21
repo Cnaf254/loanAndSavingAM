@@ -1,25 +1,30 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { Database } from '@/integrations/supabase/types';
 
 type AppRole = Database['public']['Enums']['app_role'];
 
+interface MockUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+
+interface Profile {
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  avatar_url: string | null;
+}
+
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  profile: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string | null;
-    avatar_url: string | null;
-  } | null;
+  user: MockUser | null;
+  profile: Profile | null;
   roles: AppRole[];
   loading: boolean;
-  signUp: (email: string, password: string, metadata: { first_name: string; last_name: string; phone: string }) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signOut: () => Promise<void>;
+  signIn: (role: AppRole) => void;
+  signOut: () => void;
   hasRole: (role: AppRole) => boolean;
   isStaff: () => boolean;
 }
@@ -34,125 +39,68 @@ export const useAuth = () => {
   return context;
 };
 
+const STAFF_ROLES: AppRole[] = ['admin', 'accountant', 'loan_committee', 'management_committee', 'chairperson'];
+
+const mockUsers: Record<AppRole, MockUser> = {
+  admin: { id: '1', email: 'admin@addismesob.com', first_name: 'Admin', last_name: 'User' },
+  chairperson: { id: '2', email: 'chair@addismesob.com', first_name: 'Chairperson', last_name: 'User' },
+  management_committee: { id: '3', email: 'management@addismesob.com', first_name: 'Management', last_name: 'User' },
+  loan_committee: { id: '4', email: 'loans@addismesob.com', first_name: 'Loan', last_name: 'Officer' },
+  accountant: { id: '5', email: 'accountant@addismesob.com', first_name: 'Accountant', last_name: 'User' },
+  member: { id: '6', email: 'member@addismesob.com', first_name: 'John', last_name: 'Doe' },
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<AuthContextType['profile']>(null);
+  const [user, setUser] = useState<MockUser | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserData = async (userId: string) => {
-    // Fetch profile
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('first_name, last_name, email, phone, avatar_url')
-      .eq('id', userId)
-      .single();
-
-    if (profileData) {
-      setProfile(profileData);
-    }
-
-    // Fetch roles
-    const { data: rolesData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
-
-    if (rolesData) {
-      setRoles(rolesData.map(r => r.role));
-    }
-  };
-
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        // Defer data fetching to avoid deadlocks
-        if (session?.user) {
-          setTimeout(() => {
-            fetchUserData(session.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
-          setRoles([]);
-        }
-        setLoading(false);
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserData(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    // Check localStorage for persisted session
+    const savedRole = localStorage.getItem('mockUserRole') as AppRole | null;
+    if (savedRole && mockUsers[savedRole]) {
+      const mockUser = mockUsers[savedRole];
+      setUser(mockUser);
+      setProfile({
+        first_name: mockUser.first_name,
+        last_name: mockUser.last_name,
+        email: mockUser.email,
+        phone: null,
+        avatar_url: null,
+      });
+      setRoles([savedRole]);
+    }
+    setLoading(false);
   }, []);
 
-  const signUp = async (
-    email: string, 
-    password: string, 
-    metadata: { first_name: string; last_name: string; phone: string }
-  ) => {
-    const redirectUrl = `${window.location.origin}/dashboard`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: metadata
-      }
+  const signIn = (role: AppRole) => {
+    const mockUser = mockUsers[role];
+    setUser(mockUser);
+    setProfile({
+      first_name: mockUser.first_name,
+      last_name: mockUser.last_name,
+      email: mockUser.email,
+      phone: null,
+      avatar_url: null,
     });
-    
-    return { error: error as Error | null };
+    setRoles([role]);
+    localStorage.setItem('mockUserRole', role);
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    
-    return { error: error as Error | null };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const signOut = () => {
     setUser(null);
-    setSession(null);
     setProfile(null);
     setRoles([]);
+    localStorage.removeItem('mockUserRole');
   };
 
-  const hasRole = (role: AppRole) => roles.includes(role);
-  
-  const isStaff = () => {
-    const staffRoles: AppRole[] = ['admin', 'accountant', 'loan_committee', 'management_committee', 'chairperson'];
-    return roles.some(role => staffRoles.includes(role));
-  };
+  const hasRole = (role: AppRole): boolean => roles.includes(role);
+
+  const isStaff = (): boolean => roles.some(role => STAFF_ROLES.includes(role));
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      session,
-      profile,
-      roles,
-      loading,
-      signUp,
-      signIn,
-      signOut,
-      hasRole,
-      isStaff
-    }}>
+    <AuthContext.Provider value={{ user, profile, roles, loading, signIn, signOut, hasRole, isStaff }}>
       {children}
     </AuthContext.Provider>
   );
